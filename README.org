@@ -3,3 +3,5 @@
 This is a [[https://telegram.org/][Telegram]] bot to send stuff to your [[https://orgmode.org/][org-mode]] files.
 
 The Emacs package will be developed in the upcoming [[https://www.meetup.com/emacs-ffm][Emacs FFM]] Meetups.
+
+This needs the HTTP API in [[https://github.com/zoranzaric/org-hermes-http][org-hermes-http]].
