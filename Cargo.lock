@@ -434,6 +434,7 @@ name = "org-hermes-telegram"
 version = "0.1.0"
 dependencies = [
  "frankenstein",
+ "ureq",
 ]
 
 [[package]]
@@ -970,6 +971,8 @@ dependencies = [
  "log 0.4.14",
  "once_cell",
  "rustls",
+ "serde",
+ "serde_json",
  "url 2.2.2",
  "webpki",
  "webpki-roots",
