@@ -2,9 +2,21 @@ use frankenstein::{
     api_params::ChatId, Api, GetUpdatesParams, Message, SendMessageParams, TelegramApi, Update,
 };
 use log::{debug, error, trace, warn};
+use metrics::{increment_counter, register_counter};
+use metrics_exporter_prometheus::PrometheusBuilder;
 
 fn main() {
     env_logger::init();
+    let builder = PrometheusBuilder::new();
+    builder
+        .install()
+        .expect("failed to install Prometheus recorder");
+
+    register_counter!("messages_received", "number of messages received");
+    register_counter!(
+        "unanswered_messages",
+        "number of messages we could not reply to"
+    );
 
     let api_url = std::env::var("ORG_HERMES_API_URL").expect("ORG_HERMES_API_URL not set");
     let token = std::env::var("TELEGRAM_BOT_TOKEN").expect("TELEGRAM_BOT_TOKEN not set");
@@ -25,6 +37,7 @@ fn main() {
                     if let Some(message) = update.message() {
                         if let Some(text) = message.text.clone() {
                             debug!("Text: {}", text);
+                            increment_counter!("messages_received", "type" => "text");
 
                             match ureq::post(&api_url).send_json(ureq::json!({
                                 "content": &text,
@@ -49,6 +62,7 @@ fn main() {
                             };
                         } else {
                             warn!("Unhandled message type");
+                            increment_counter!("messages_received", "type" => "UNHANDLED");
                             accept_message(&mut update_params, &api, &message, update, "Thanks for your message! Unfortunatly I am not able to handle the provide message type".into());
                         }
                     }
@@ -76,5 +90,6 @@ fn accept_message(
 
     if let Err(e) = api.send_message(&send_message_params) {
         error!("Could not send reply: {:?}", e);
+        increment_counter!("unanswered_messages");
     }
 }

@@ -9,5 +9,7 @@ frankenstein = "0.4"
 
 log = "0.4"
 env_logger = "0.8"
+metrics = "0.16"
+metrics-exporter-prometheus = "0.5"
 
 ureq = { version = "2", features = [ "json" ] }
